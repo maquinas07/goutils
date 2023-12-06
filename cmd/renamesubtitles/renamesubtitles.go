@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/maquinas07/golibs/ascii"
@@ -13,7 +14,6 @@ import (
 
 const (
 	reverseFilename = ".reverse"
-	maxChapters     = 1000
 )
 
 var videoExtension = "mkv"
@@ -51,7 +51,7 @@ func extractChapterInfoFromFilename(filename string) int {
 	return chapter
 }
 
-func globFilenamesSortedByChapter(dir, pattern string) (files []string, err error) {
+func globFilenamesSortedByChapter(dir, pattern string) (files map[string]string, err error) {
 	fi, err := os.Stat(dir)
 	if err != nil {
 		return // ignore I/O error
@@ -77,11 +77,12 @@ func globFilenamesSortedByChapter(dir, pattern string) (files []string, err erro
 		}
 	}
 
-	files = make([]string, maxChapters)
+	files = make(map[string]string)
 	for i := 0; i < len(matchedFiles); i++ {
 		chapter := extractChapterInfoFromFilename(matchedFiles[i])
-		if chapter > 0 && chapter < maxChapters {
-			files[chapter] = matchedFiles[i]
+		if chapter > 0 {
+			chapterStr := strconv.Itoa(chapter)
+			files[chapterStr] = matchedFiles[i]
 		}
 	}
 
@@ -135,25 +136,23 @@ func renameSubtitles(dir string) error {
 		reportAndDie(err, -1)
 	}
 
-	if len(videoFiles) == len(subFiles) {
-		_, err := os.Stat(reverseFilename)
-		if err == nil || !errors.Is(err, os.ErrNotExist) {
-			return fmt.Errorf("renamesubtitles already executed in this directory, remove `./.reverse` or revert the renaming before using again.\n")
-		}
-		reverseFile, err := os.Create(reverseFilename)
-		defer reverseFile.Close()
-		if err != nil {
-			return err
-		}
-		for i := range videoFiles {
-			if videoFiles[i] != "" && subFiles[i] != "" {
-				oldSubName := filepath.Base(subFiles[i])
-				newSubName := fmt.Sprintf("%s.%s.%s", trimExtension(videoFiles[i]), language, subExtension)
-				os.Rename(oldSubName, newSubName)
-				reverseFile.WriteString(fmt.Sprintf("%s=%s\n", oldSubName, newSubName))
-				if verbose {
-					fmt.Printf("Renaming %s into %s\n", oldSubName, newSubName)
-				}
+	_, err = os.Stat(reverseFilename)
+	if err == nil || !errors.Is(err, os.ErrNotExist) {
+		return fmt.Errorf("renamesubtitles already executed in this directory, remove `./.reverse` or revert the renaming before using again.\n")
+	}
+	reverseFile, err := os.Create(reverseFilename)
+	defer reverseFile.Close()
+	if err != nil {
+		return err
+	}
+	for i := range videoFiles {
+		if videoFiles[i] != "" && subFiles[i] != "" {
+			oldSubName := filepath.Base(subFiles[i])
+			newSubName := fmt.Sprintf("%s.%s.%s", trimExtension(videoFiles[i]), language, subExtension)
+			os.Rename(oldSubName, newSubName)
+			reverseFile.WriteString(fmt.Sprintf("%s=%s\n", oldSubName, newSubName))
+			if verbose {
+				fmt.Printf("Renaming %s into %s\n", oldSubName, newSubName)
 			}
 		}
 	}
