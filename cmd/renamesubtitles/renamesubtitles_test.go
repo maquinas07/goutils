@@ -7,13 +7,13 @@ import (
 )
 
 func TestExtractChapter(t *testing.T) {
-	assert.EqualValues(t, extractChapterInfoFromFilename("_Blood+_-_41_.mkv"), 41)
-	assert.EqualValues(t, extractChapterInfoFromFilename("Babylon - 02.mkv"), 2)
-	assert.EqualValues(t, extractChapterInfoFromFilename("Occult Academy - S01E01.mkv"), 1)
-	assert.EqualValues(t, extractChapterInfoFromFilename("Seikon_no_Qwaser_II_-_03.mkv"), 3)
-	assert.EqualValues(t, extractChapterInfoFromFilename("Kage no Jitsuryokusha ni Naritakute! S2 - 01.srt"), 1)
-	assert.EqualValues(t, extractChapterInfoFromFilename("The Eminence in Shadow - S02E04.mkv"), 4)
-	assert.EqualValues(t, extractChapterInfoFromFilename("86 - 04.mkv"), 4)
-	assert.EqualValues(t, extractChapterInfoFromFilename("Yamada-kun to Lv999 no Koi wo Suru (13)"), 13)
-
+	assert.EqualValues(t, 41, extractChapterInfoFromFilename("_Blood+_-_41_.mkv"))
+	assert.EqualValues(t, 2, extractChapterInfoFromFilename("Babylon - 02.mkv"))
+	assert.EqualValues(t, 1, extractChapterInfoFromFilename("Occult Academy - S01E01.mkv"))
+	assert.EqualValues(t, 3, extractChapterInfoFromFilename("Seikon_no_Qwaser_II_-_03.mkv"))
+	assert.EqualValues(t, 1, extractChapterInfoFromFilename("Kage no Jitsuryokusha ni Naritakute! S2 - 01.srt"))
+	assert.EqualValues(t, 4, extractChapterInfoFromFilename("The Eminence in Shadow - S02E04.mkv"))
+	assert.EqualValues(t, 4, extractChapterInfoFromFilename("86 - 04.mkv"))
+	assert.EqualValues(t, 13, extractChapterInfoFromFilename("Yamada-kun to Lv999 no Koi wo Suru (13)"))
+	assert.EqualValues(t, 7, extractChapterInfoFromFilename("[AT-X fix] 第07話 古老、曰く.ja.srt"))
 }
