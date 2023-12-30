@@ -14,4 +14,6 @@ func TestExtractChapter(t *testing.T) {
 	assert.EqualValues(t, extractChapterInfoFromFilename("Kage no Jitsuryokusha ni Naritakute! S2 - 01.srt"), 1)
 	assert.EqualValues(t, extractChapterInfoFromFilename("The Eminence in Shadow - S02E04.mkv"), 4)
 	assert.EqualValues(t, extractChapterInfoFromFilename("86 - 04.mkv"), 4)
+	assert.EqualValues(t, extractChapterInfoFromFilename("Yamada-kun to Lv999 no Koi wo Suru (13)"), 13)
+
 }

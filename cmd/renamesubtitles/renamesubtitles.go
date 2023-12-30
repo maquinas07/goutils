@@ -29,7 +29,13 @@ func extractChapterInfoFromFilename(filename string) int {
 	isCommonEpisodeMarker := func(rune rune) bool {
 		return rune == '-' || rune == ' ' || rune == '_' || rune == '.'
 	}
-	var shouldConsider bool
+    isOpenParenthesis := func(rune rune) bool {
+        return rune == '('
+    }
+    isCloseParenthesis := func(rune rune) bool {
+        return rune == ')'
+    }
+	var shouldConsider, wasOpenParenthesis bool
 	for i, r := range filename {
 		if (shouldConsider) && ascii.IsDigit(byte(r)) {
 			shouldConsider = false
@@ -37,7 +43,7 @@ func extractChapterInfoFromFilename(filename string) int {
 				if ascii.IsDigit(filename[j]) {
 					continue
 				}
-				if isCommonEpisodeMarker(rune(filename[j])) {
+				if isCommonEpisodeMarker(rune(filename[j])) || (wasOpenParenthesis && isCloseParenthesis(rune(filename[j]))) {
 					maybeChapter, err := ascii.ParseInt([]byte(filename[i:j]))
 					if err == nil {
 						chapter = maybeChapter
@@ -46,7 +52,8 @@ func extractChapterInfoFromFilename(filename string) int {
 				}
 			}
 		}
-		shouldConsider = isExplicitEpisodeMarker(r) || isCommonEpisodeMarker(r)
+		shouldConsider = isExplicitEpisodeMarker(r) || isCommonEpisodeMarker(r) || isOpenParenthesis(r)
+        wasOpenParenthesis = isOpenParenthesis(r)
 	}
 	return chapter
 }
