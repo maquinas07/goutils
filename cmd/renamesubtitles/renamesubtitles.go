@@ -23,30 +23,38 @@ var reverse, verbose bool
 
 func extractChapterInfoFromFilename(filename string) int {
 	chapter := -1
-	isExplicitEpisodeMarker := func(rune rune) bool {
-		return rune == 'E' || rune == 'e'
-	}
 	isCommonEpisodeMarker := func(rune rune) bool {
 		return rune == '-' || rune == ' ' || rune == '_' || rune == '.'
 	}
-	var shouldConsider bool
-	for i, r := range filename {
-		if (shouldConsider) && ascii.IsDigit(byte(r)) {
-			shouldConsider = false
-			for j := i + 1; j < len(filename); j++ {
-				if ascii.IsDigit(filename[j]) {
+	isOpenEpisodeMarker := func(rune rune) bool {
+		return rune == '(' || rune == '第' || rune == 'E' || rune == 'e'
+	}
+	isCloseEpisodeMarker := func(rune rune) bool {
+		return rune == ')' || rune == '話'
+	}
+	var common, wasOpenEpisodeMarker bool
+	for i, ir := range filename {
+		if (common || wasOpenEpisodeMarker) && ascii.IsDigit(byte(ir)) {
+			for j, jr := range filename[i+1:] {
+				if ascii.IsDigit(byte(jr)) {
 					continue
 				}
-				if isCommonEpisodeMarker(rune(filename[j])) {
-					maybeChapter, err := ascii.ParseInt([]byte(filename[i:j]))
+				if isCommonEpisodeMarker(rune(jr)) || (wasOpenEpisodeMarker && isCloseEpisodeMarker(rune(jr))) {
+					maybeChapter, err := ascii.ParseInt([]byte(filename[i : i+j+1]))
 					if err == nil {
 						chapter = maybeChapter
+						if wasOpenEpisodeMarker {
+							return chapter
+						}
 					}
 					break
 				}
 			}
+			common = false
+			wasOpenEpisodeMarker = false
 		}
-		shouldConsider = isExplicitEpisodeMarker(r) || isCommonEpisodeMarker(r)
+		common = isCommonEpisodeMarker(ir)
+		wasOpenEpisodeMarker = isOpenEpisodeMarker(ir)
 	}
 	return chapter
 }
