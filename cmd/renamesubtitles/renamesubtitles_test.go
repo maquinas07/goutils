@@ -17,4 +17,5 @@ func TestExtractChapter(t *testing.T) {
 	assert.EqualValues(t, 13, extractChapterInfoFromFilename(" Lv999 (13)"))
 	assert.EqualValues(t, 7, extractChapterInfoFromFilename(" 第07話 "))
 	assert.EqualValues(t, 10, extractChapterInfoFromFilename(" - 10v2 (1080p)"))
+	assert.EqualValues(t, 5, extractChapterInfoFromFilename(".S02E05("))
 }

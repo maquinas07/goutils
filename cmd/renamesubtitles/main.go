@@ -12,6 +12,7 @@ func main() {
 	getopt.AddOption('l', "language", &language, true, nil)
 	getopt.AddFlag('r', "reverse", &reverse)
 	getopt.AddFlag('v', "verbose", &verbose)
+	getopt.AddFlag('n', "sort-by-name", &sortByName)
 	getopt.Parse()
 
 	cwd, err := os.Getwd()

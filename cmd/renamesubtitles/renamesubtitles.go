@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/maquinas07/golibs/ascii"
+	"golang.org/x/exp/slices"
 )
 
 const (
@@ -20,6 +21,7 @@ var videoExtension = "mkv"
 var subExtension = "srt"
 var language = "ja"
 var reverse, verbose bool
+var sortByName bool
 
 func extractChapterInfoFromFilename(filename string) int {
 	chapter := -1
@@ -42,7 +44,7 @@ func extractChapterInfoFromFilename(filename string) int {
 				if ascii.IsDigit(byte(jr)) {
 					continue
 				}
-				if isCommonEpisodeMarker(rune(jr)) || isSubtitleVersionMarker(rune(jr)) || (wasOpenEpisodeMarker && isCloseEpisodeMarker(rune(jr))) {
+				if isCommonEpisodeMarker(rune(jr)) || isSubtitleVersionMarker(rune(jr)) || (wasOpenEpisodeMarker && isCloseEpisodeMarker(rune(jr))) || chapter == -1 {
 					maybeChapter, err := ascii.ParseInt([]byte(filename[i : i+j+1]))
 					if err == nil {
 						chapter = maybeChapter
@@ -100,6 +102,45 @@ func globFilenamesSortedByChapter(dir, pattern string) (files map[string]string,
 	return
 }
 
+func globFilenamesSortedByName(dir, pattern string) (files map[string]string, err error) {
+	fi, err := os.Stat(dir)
+	if err != nil {
+		return // ignore I/O error
+	}
+
+	if !fi.IsDir() {
+		return // ignore I/O error
+	}
+
+	d, err := os.Open(dir)
+	if err != nil {
+		return // ignore I/O error
+	}
+
+	defer d.Close()
+
+	names, _ := d.Readdirnames(-1)
+	var matchedFiles []string
+	for _, n := range names {
+		matched, err := filepath.Match(pattern, n)
+		if err != nil {
+			return files, err
+		}
+		if matched {
+			matchedFiles = append(matchedFiles, filepath.Join(dir, n))
+		}
+	}
+	slices.Sort(matchedFiles)
+
+	files = make(map[string]string)
+	for chapter := 0; chapter < len(matchedFiles); chapter++ {
+		chapterStr := strconv.Itoa(chapter)
+		files[chapterStr] = matchedFiles[chapter]
+	}
+
+	return
+}
+
 func trimExtension(path string) string {
 	return strings.TrimSuffix(filepath.Base(path), filepath.Ext(path))
 }
@@ -138,11 +179,18 @@ func reverseRenameSubtitles(dir string) error {
 }
 
 func renameSubtitles(dir string) error {
-	videoFiles, err := globFilenamesSortedByChapter(dir, fmt.Sprintf("*.%s", videoExtension))
+	var globSorted func(string, string) (files map[string]string, err error)
+	if sortByName {
+		globSorted = globFilenamesSortedByName
+	} else {
+		globSorted = globFilenamesSortedByChapter
+	}
+
+	videoFiles, err := globSorted(dir, fmt.Sprintf("*.%s", videoExtension))
 	if err != nil {
 		reportAndDie(err, -1)
 	}
-	subFiles, err := globFilenamesSortedByChapter(dir, fmt.Sprintf("*.%s", subExtension))
+	subFiles, err := globSorted(dir, fmt.Sprintf("*.%s", subExtension))
 	if err != nil {
 		reportAndDie(err, -1)
 	}
