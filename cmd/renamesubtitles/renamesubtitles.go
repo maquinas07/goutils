@@ -32,6 +32,9 @@ func extractChapterInfoFromFilename(filename string) int {
 	isCloseEpisodeMarker := func(rune rune) bool {
 		return rune == ')' || rune == '話'
 	}
+	isSubtitleVersionMarker := func(rune rune) bool {
+		return rune == 'v'
+	}
 	var common, wasOpenEpisodeMarker bool
 	for i, ir := range filename {
 		if (common || wasOpenEpisodeMarker) && ascii.IsDigit(byte(ir)) {
@@ -39,7 +42,7 @@ func extractChapterInfoFromFilename(filename string) int {
 				if ascii.IsDigit(byte(jr)) {
 					continue
 				}
-				if isCommonEpisodeMarker(rune(jr)) || (wasOpenEpisodeMarker && isCloseEpisodeMarker(rune(jr))) {
+				if isCommonEpisodeMarker(rune(jr)) || isSubtitleVersionMarker(rune(jr)) || (wasOpenEpisodeMarker && isCloseEpisodeMarker(rune(jr))) {
 					maybeChapter, err := ascii.ParseInt([]byte(filename[i : i+j+1]))
 					if err == nil {
 						chapter = maybeChapter

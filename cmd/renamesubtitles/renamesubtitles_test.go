@@ -16,4 +16,5 @@ func TestExtractChapter(t *testing.T) {
 	assert.EqualValues(t, 4, extractChapterInfoFromFilename("86 - 04.mkv"))
 	assert.EqualValues(t, 13, extractChapterInfoFromFilename("Yamada-kun to Lv999 no Koi wo Suru (13)"))
 	assert.EqualValues(t, 7, extractChapterInfoFromFilename("[AT-X fix] 第07話 古老、曰く.ja.srt"))
+	assert.EqualValues(t, 10, extractChapterInfoFromFilename("[NanakoRaws] Dead Mount Death Play - 10v2 (1080p).srt"))
 }
