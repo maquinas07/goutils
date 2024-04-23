@@ -44,7 +44,7 @@ func extractChapterInfoFromFilename(filename string) int {
 				if ascii.IsDigit(byte(jr)) {
 					continue
 				}
-				if isCommonEpisodeMarker(rune(jr)) || isSubtitleVersionMarker(rune(jr)) || (wasOpenEpisodeMarker && isCloseEpisodeMarker(rune(jr))) {
+				if isCommonEpisodeMarker(rune(jr)) || isSubtitleVersionMarker(rune(jr)) || (wasOpenEpisodeMarker && isCloseEpisodeMarker(rune(jr))) || chapter == -1 {
 					maybeChapter, err := ascii.ParseInt([]byte(filename[i : i+j+1]))
 					if err == nil {
 						chapter = maybeChapter
