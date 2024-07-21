@@ -29,10 +29,10 @@ func extractChapterInfoFromFilename(filename string) int {
 		return rune == '-' || rune == ' ' || rune == '_' || rune == '.'
 	}
 	isOpenEpisodeMarker := func(rune rune) bool {
-		return rune == '(' || rune == '第' || rune == 'E' || rune == 'e'
+		return rune == '(' || rune == '第' || rune == 'E' || rune == 'e' || rune == '['
 	}
 	isCloseEpisodeMarker := func(rune rune) bool {
-		return rune == ')' || rune == '話'
+		return rune == ')' || rune == '話' || rune == ']'
 	}
 	isSubtitleVersionMarker := func(rune rune) bool {
 		return rune == 'v'
