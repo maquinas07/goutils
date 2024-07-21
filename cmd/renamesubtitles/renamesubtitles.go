@@ -197,13 +197,13 @@ func renameSubtitles(dir string) error {
 
 	_, err = os.Stat(reverseFilename)
 	if err == nil || !errors.Is(err, os.ErrNotExist) {
-		return fmt.Errorf("renamesubtitles already executed in this directory, remove `./.reverse` or revert the renaming before using again.\n")
+		return fmt.Errorf("renamesubtitles already executed in this directory, remove `./.reverse` or revert the renaming before using again")
 	}
 	reverseFile, err := os.Create(reverseFilename)
-	defer reverseFile.Close()
 	if err != nil {
 		return err
 	}
+	defer reverseFile.Close()
 	for i := range videoFiles {
 		if videoFiles[i] != "" && subFiles[i] != "" {
 			oldSubName := filepath.Base(subFiles[i])
