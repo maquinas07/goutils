@@ -59,7 +59,7 @@ func extractChapterInfoFromFilename(filename string) int {
 			wasOpenEpisodeMarker = false
 		}
 		common = isCommonEpisodeMarker(ir)
-		wasOpenEpisodeMarker = isOpenEpisodeMarker(ir)
+		wasOpenEpisodeMarker = isOpenEpisodeMarker(ir) && !wasOpenEpisodeMarker
 	}
 	return chapter
 }
