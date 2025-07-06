@@ -2,7 +2,7 @@ module goutils
 
 go 1.21.4
 
-replace github.com/maquinas07/golibs => /home/elias/Documents/Mios/golibs
+replace github.com/maquinas07/golibs => ../golibs
 
 require (
 	github.com/stretchr/testify v1.8.4
